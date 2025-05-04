@@ -12,7 +12,7 @@ const streams = [
     platform: "YouTube",
     url: "https://www.youtube.com/c/furiagg",
     live: true,
-    thumbnail: "https://i.ytimg.com/vi/5qap5aO4i9A/maxresdefault.jpg",
+    thumbnail: "src/assets/images/furiavsteamliquid.webp",
     viewers: "23.5K"
   },
   {
@@ -21,7 +21,7 @@ const streams = [
     platform: "Twitch",
     url: "https://www.twitch.tv/furiatv",
     live: false,
-    thumbnail: "https://static-cdn.jtvnw.net/previews-ttv/live_user_furiatv-440x248.jpg",
+    thumbnail: "src/assets/images/FURIA-CS.jpg",
     scheduledTime: "Hoje às 20:00"
   },
   {
@@ -30,7 +30,7 @@ const streams = [
     platform: "Twitch",
     url: "https://www.twitch.tv/kscerato",
     live: true,
-    thumbnail: "https://static-cdn.jtvnw.net/previews-ttv/live_user_kscerato-440x248.jpg",
+    thumbnail: "src/assets/images/kscerato.png",
     viewers: "5.2K"
   }
 ];

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { CalendarDays, Trophy, Users, Video, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -33,11 +32,11 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
 
   return (
     <div className="w-20 lg:w-64 bg-furia-black border-r border-furia-gray flex flex-col transition-all duration-300 ease-in-out">
-      <div className="p-6 flex justify-center lg:justify-start items-center border-b border-furia-gray">
+      <div className="p-6 justify-center lg:justify-start items-center border-b border-furia-gray">
         <img 
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/FURIA_Logo.svg/1200px-FURIA_Logo.svg.png" 
+          src="src/assets/images/furia-logo.png" 
           alt="FURIA Logo" 
-          className="h-12 transform hover-scale transition-transform duration-300" 
+          className="h-12 transform flex rounded-full hover-scale transition-transform duration-300" 
         />
         <span className="hidden lg:block ml-3 font-bold text-xl text-furia-red">FURIA</span>
       </div>
@@ -51,14 +50,26 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
                 className={cn(
                   "w-full flex items-center justify-center lg:justify-start px-4 py-3 rounded-lg transition-all duration-300",
                   activeTab === item.id
-                    ? "bg-gradient-to-r from-furia-red to-furia-red/80 text-white shadow-lg shadow-furia-red/20"
+                    ? "bg-gradient-to-r from-furia-red to-furia-red/80 shadow-lg shadow-furia-red/20"
                     : "text-gray-400 hover:bg-furia-gray/30 hover:text-white"
                 )}
               >
-                <item.icon className={cn("h-5 w-5", activeTab === item.id && "animate-pulse")} />
-                <span className={cn("hidden lg:block ml-3 transition-opacity", 
-                  activeTab === item.id ? "opacity-100" : "opacity-70"
-                )}>{item.name}</span>
+                <item.icon
+                  className={cn(
+                    "h-5 w-5",
+                    activeTab === item.id ? "text-black animate-pulse" : ""
+                  )}
+                />
+                <span
+                  className={cn(
+                    "hidden lg:block ml-3 transition-opacity",
+                    activeTab === item.id
+                      ? "text-black opacity-100"
+                      : "text-gray-400 opacity-70"
+                  )}
+                >
+                  {item.name}
+                </span>
               </button>
             </li>
           ))}

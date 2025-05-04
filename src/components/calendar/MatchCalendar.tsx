@@ -13,7 +13,7 @@ const upcomingMatches = [
     competition: "ESL Pro League",
     date: new Date(2025, 5, 10, 15, 0), // June 10, 2025, 3:00 PM
     game: "CS2",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Team_Liquid_logo.svg/2048px-Team_Liquid_logo.svg.png"
+    logo: "src/assets/images/team_liquid.png"
   },
   {
     id: "2",
@@ -21,7 +21,7 @@ const upcomingMatches = [
     competition: "BLAST Premier",
     date: new Date(2025, 5, 15, 18, 30), // June 15, 2025, 6:30 PM
     game: "CS2",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Natus_Vincere_logo.svg/1200px-Natus_Vincere_logo.svg.png"
+    logo: "src/assets/images/navi-logo.png"
   },
   {
     id: "3",
@@ -29,7 +29,7 @@ const upcomingMatches = [
     competition: "IEM Katowice",
     date: new Date(2025, 5, 20, 12, 0), // June 20, 2025, 12:00 PM
     game: "CS2",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/4/40/FaZe_Clan_logo.svg"
+    logo: "src/assets/images/faze-clan-logo.png"
   }
 ];
 
@@ -53,7 +53,7 @@ const MatchCalendar = () => {
               matchDay: matchDates,
             }}
             modifiersClassNames={{
-              matchDay: "bg-furia-red text-white font-bold rounded-md",
+              matchDay: "bg-furia-red text-black font-bold rounded-md",
             }}
           />
         </div>
@@ -73,7 +73,7 @@ const MatchCalendar = () => {
               <CardContent>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/FURIA_Logo.svg/1200px-FURIA_Logo.svg.png" alt="FURIA" className="h-8" />
+                    <img src="src\assets\images\furia-logo.png" alt="FURIA" className="h-8 rounded-full" />
                     <span className="text-xl font-bold">VS</span>
                     <img src={match.logo} alt={match.opponent} className="h-8" />
                   </div>

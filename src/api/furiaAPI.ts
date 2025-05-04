@@ -1,4 +1,3 @@
-
 import axios from 'axios';
 
 const BASE_URL = 'https://api.hltv.org'; // Note: This is for example only, you would need to use a real API
@@ -61,7 +60,7 @@ const mockData = {
       stream: "https://www.twitch.tv/blastpremier"
     }
   ] as Match[],
-  
+
   recentMatches: [
     {
       id: "3",
@@ -82,7 +81,7 @@ const mockData = {
       status: "completed"
     }
   ] as Match[],
-  
+
   players: [
     {
       id: "1",
@@ -125,7 +124,7 @@ const mockData = {
       ]
     }
   ] as Player[],
-  
+
   news: [
     {
       id: "1",
@@ -151,57 +150,86 @@ export const furiaAPI = {
   getUpcomingMatches: async (): Promise<Match[]> => {
     // In a real implementation, you would fetch from an actual API
     // return axios.get(`${BASE_URL}/matches/upcoming/furia`).then(res => res.data);
-    
+
     // For development, return mock data
     return Promise.resolve(mockData.upcomingMatches);
   },
-  
+
   getRecentMatches: async (): Promise<Match[]> => {
     // In a real implementation, you would fetch from an actual API
     // return axios.get(`${BASE_URL}/matches/recent/furia`).then(res => res.data);
-    
+
     // For development, return mock data
     return Promise.resolve(mockData.recentMatches);
   },
-  
+
   getPlayers: async (): Promise<Player[]> => {
     // In a real implementation, you would fetch from an actual API
     // return axios.get(`${BASE_URL}/team/furia/players`).then(res => res.data);
-    
+
     // For development, return mock data
     return Promise.resolve(mockData.players);
   },
-  
+
   getNews: async (): Promise<NewsItem[]> => {
     // In a real implementation, you would fetch from an actual API
     // return axios.get(`${BASE_URL}/news/furia`).then(res => res.data);
-    
+
     // For development, return mock data
     return Promise.resolve(mockData.news);
   },
-  
+
   // Method to query the chatbot with FURIA related questions
   queryChatbot: async (query: string): Promise<{ response: string }> => {
     // In a real implementation, this would call an AI service like GPT or Gemini
     // return axios.post(`${BASE_URL}/chatbot`, { query }).then(res => res.data);
-    
+
     // For development, simulate a response
-    const responses: Record<string, string> = {
-      'próximo jogo': `O próximo jogo da FURIA será contra ${mockData.upcomingMatches[0].opponent} no evento ${mockData.upcomingMatches[0].event} em ${new Date(mockData.upcomingMatches[0].date).toLocaleDateString()}.`,
-      'títulos': 'A FURIA conquistou 7 títulos internacionais, incluindo o BLAST Premier: Fall 2022 e a ESL Pro League Season 18.',
-      'jogadores': 'O atual elenco da FURIA é composto por KSCERATO, yuurih, arT, drop e chelo.',
-      'loja': 'Você pode comprar produtos oficiais da FURIA na loja online oficial: https://lojafuria.com.br'
-    };
-    
-    // Simple keyword matching for demo purposes
-    let response = 'Desculpe, não tenho informações sobre isso. Tente perguntar sobre próximos jogos, títulos ou jogadores da FURIA.';
-    
-    Object.entries(responses).forEach(([key, value]) => {
-      if (query.toLowerCase().includes(key)) {
-        response = value;
+    const responses: { keywords: string[], response: string }[] = [
+      {
+        keywords: ['próximo jogo', 'próxima partida', 'quando a furia joga'],
+        response: `O próximo jogo da FURIA será contra ${mockData.upcomingMatches[0].opponent} no evento ${mockData.upcomingMatches[0].event} em ${new Date(mockData.upcomingMatches[0].date).toLocaleDateString()}.`
+      },
+      {
+        keywords: ['títulos', 'campeonatos que a furia ganhou', 'quantos titulos a furia tem'],
+        response: 'A FURIA conquistou 7 títulos internacionais, incluindo o BLAST Premier: Fall 2022 e a ESL Pro League Season 18.'
+      },
+      {
+        keywords: ['jogadores', 'elenco da furia', 'quem joga na furia'],
+        response: 'O atual elenco da FURIA é composto por KSCERATO, yuurih, arT, drop e chelo.'
+      },
+      {
+        keywords: ['loja', 'comprar produtos da furia', 'onde comprar camisa da furia'],
+        response: 'Você pode comprar produtos oficiais da FURIA na loja online oficial: https://lojafuria.com.br'
+      },
+      {
+        keywords: ['olá', 'oi', 'fazer'],
+        response: 'Me pergunte algo sobre os próximos jogos da FURIA!, ou sobre seus títulos e jogadores. Também posso te direcionar à loja oficial da FURIA.'
+      },
+      {
+        keywords: ['vamos furia', 'vamos'],
+        response: 'VAMOS! 🖤🤍'
+      },
+      {
+        keywords: ['qual o rating do kscerato', 'rating do kscerato'],
+        response: `O rating atual de KSCERATO é ${mockData.players.find(p => p.name === 'KSCERATO')?.stats.rating}.`
+      },
+      {
+        keywords: ['quem é o yuurih', 'yuurih'],
+        response: `Yuurih (Yuri Santos) é um Rifler da FURIA.`
       }
-    });
-    
+      // Adicione novas entradas aqui seguindo este formato
+    ];
+
+    let response = 'Desculpe, não tenho informações sobre isso. Tente perguntar sobre próximos jogos, títulos ou jogadores da FURIA.';
+
+    for (const item of responses) {
+      if (item.keywords.some(keyword => query.toLowerCase().includes(keyword))) {
+        response = item.response;
+        break; // Para na primeira correspondência
+      }
+    }
+
     // Simulate API delay
     return new Promise(resolve => {
       setTimeout(() => {

@@ -10,7 +10,7 @@ const news = [
     id: "1",
     title: "FURIA vence Team Liquid e avança para a semifinal da ESL Pro League",
     excerpt: "A equipe brasileira mostrou um desempenho impressionante com KSCERATO liderando o caminho com uma performance de 30 frags no mapa decisivo.",
-    image: "https://s2.glbimg.com/QeM2FL7xkA1lffDHaQdXBqXMipw=/0x0:1920x1080/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_bc8228b6673f488aa253bbcb03c80ec5/internal_photos/bs/2023/f/v/2VsxLBQaSAOWOTYD1TZA/52929215603-591851a733-o.jpg",
+    image: "src/assets/images/news1.jpg",
     date: new Date(2025, 4, 28), // May 28, 2025
     source: "HLTV.org"
   },
@@ -18,7 +18,7 @@ const news = [
     id: "2",
     title: "FURIA anuncia patrocínio milionário com marca global",
     excerpt: "A organização brasileira fechou uma parceria de três anos que promete expandir ainda mais sua presença internacional.",
-    image: "https://cdn.esportspedia.com/images/thumb/d/d7/FURIA_2018.png/600px-FURIA_2018.png",
+    image: "src/assets/images/news2.jpg",
     date: new Date(2025, 4, 25), // May 25, 2025
     source: "Globo Esporte"
   },
@@ -26,7 +26,7 @@ const news = [
     id: "3",
     title: "Jogadores da FURIA visitam fãs em hospital de São Paulo",
     excerpt: "Em uma ação social, a equipe brasileira passou o dia com jovens pacientes, distribuindo presentes e jogando com os fãs.",
-    image: "https://www.theloadout.com/wp-content/uploads/2023/06/furia-logo-cs2.jpg",
+    image: "src/assets/images/news3.jpg",
     date: new Date(2025, 4, 20), // May 20, 2025
     source: "ESPN Brasil"
   },
@@ -34,7 +34,7 @@ const news = [
     id: "4",
     title: "FURIA se prepara para bootcamp na Europa antes do próximo Major",
     excerpt: "A equipe viajará na próxima semana para se preparar intensamente para o próximo grande torneio internacional.",
-    image: "https://www.theloadout.com/wp-content/uploads/2023/03/furia-logo-esports-rotated.jpg",
+    image: "src/assets/images/news4.jpg",
     date: new Date(2025, 4, 15), // May 15, 2025
     source: "Dexerto"
   }

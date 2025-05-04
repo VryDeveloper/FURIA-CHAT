@@ -1,4 +1,3 @@
-
 import React from "react";
 import { cn } from "@/lib/utils";
 import type { Message } from "./ChatInterface";
@@ -21,11 +20,15 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
       <div className="flex items-center mb-1">
         <div 
           className={cn(
-            "h-8 w-8 rounded-full flex items-center justify-center text-white",
-            isUser ? "bg-furia-red order-2 ml-2" : "bg-furia-gold order-1 mr-2"
+            "h-8 w-8 rounded-full flex items-center justify-center",
+            isUser ? "order-2 ml-2" : "order-1 mr-2"
           )}
         >
-          {isUser ? "F" : "B"}
+          <img
+            src={isUser ? "src/assets/images/user-icon.png" : "src/assets/images/furia-logo.png"} // Substitua pelo caminho correto da imagem
+            alt={isUser ? "User Avatar" : "Bot Avatar"}
+            className="h-full w-full object-cover rounded-full"
+          />
         </div>
         <div 
           className={cn(
@@ -40,7 +43,7 @@ const ChatMessage = ({ message }: ChatMessageProps) => {
         className={cn(
           "p-4 rounded-xl",
           isUser 
-            ? "bg-furia-red text-white rounded-tr-none" 
+            ? "bg-white text-black rounded-tr-none text-right" 
             : "bg-furia-gray text-white rounded-tl-none"
         )}
       >

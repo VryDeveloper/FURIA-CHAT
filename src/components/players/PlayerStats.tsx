@@ -12,7 +12,7 @@ const players = [
     realName: "Kaike Cerato",
     role: "Rifler",
     country: "Brasil",
-    photo: "https://img-cdn.hltv.org/playerbodyshot/R96JIVF2RluT0jWxkRcnf0.png?ixlib=java-2.1.0&s=fe7c0cefa22ea87ff935aa5ae907551d",
+    photo: "src/assets/images/kscerato-player.webp",
     stats: {
       rating: 1.21,
       kd: 1.35,
@@ -33,7 +33,7 @@ const players = [
     realName: "Yuri Santos",
     role: "Rifler",
     country: "Brasil",
-    photo: "https://img-cdn.hltv.org/playerbodyshot/Gxs84QrTL6IDracdgaJ38t.png?ixlib=java-2.1.0&s=7faf418e0f18bcfd53fa162e2cd1370f",
+    photo: "src/assets/images/yuurih-player.webp",
     stats: {
       rating: 1.18,
       kd: 1.29,
@@ -50,25 +50,27 @@ const players = [
   },
   {
     id: "3",
-    name: "arT",
-    realName: "Andrei Piovezan",
-    role: "In-game Leader",
+    name: "FalleN",
+    realName: "Gabriel Toledo",
+    role: "In-game Leader (AWPer)",
     country: "Brasil",
-    photo: "https://img-cdn.hltv.org/playerbodyshot/q5E9CCXCoFGzxlNTKGYiCF.png?ixlib=java-2.1.0&s=8847c1b6772ac065b8ec19c1d1509426",
+    photo: "src/assets/images/fallen-player.webp",
     stats: {
-      rating: 1.01,
-      kd: 0.98,
-      adr: 75.2,
-      kpr: 0.68,
-      headshots: 39.6,
-      mapsPlayed: 254
+      rating: 1.06,
+      kd: 1.01,
+      adr: 72.3,
+      kpr: 0.70,
+      headshots: 27.5,
+      mapsPlayed: 1050
     },
     achievements: [
-      "ESL Pro League Season 16 - Semifinalist",
-      "BLAST Premier: Fall 2022 - Champion",
-      "IEM Rio Major 2022 - Top 8"
+      "2x Major Champion (Columbus 2016, Cologne 2016)",
+      "Top 1 HLTV 2016 (as team)",
+      "Joined FURIA in 2023 to lead a new era",
+      "ESL Pro League Season 18 - Playoffs",
+      "IEM Cologne - Quarterfinals 2023"
     ]
-  }
+  }  
 ];
 
 const PlayerStats = () => {

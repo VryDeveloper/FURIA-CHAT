@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { furiaAPI, Match, Player } from '@/api/furiaAPI';
 import { format } from 'date-fns';
@@ -50,103 +49,116 @@ export const useChatbot = () => {
   ) => {
     const now = new Date();
     const lastFetch = dataCache.lastFetch[type];
-    
+
     // Verificar se os dados estão em cache e não estão expirados
     if (
-      dataCache[type] && 
-      lastFetch && 
+      dataCache[type] &&
+      lastFetch &&
       now.getTime() - lastFetch.getTime() < maxAge
     ) {
       return dataCache[type];
     }
-    
+
     // Buscar novos dados
     const data = await fetchFn();
     dataCache[type] = data;
     dataCache.lastFetch[type] = now;
-    
+
     return data;
   };
 
-  const generateResponse = async (message: string): Promise<string> => {
-    setIsLoading(true);
-    
-    try {
-      // Converter mensagem para minúsculas para facilitar a comparação
-      const lowerMessage = message.toLowerCase();
-      
-      // Padrões para jogos e resultados
-      if (lowerMessage.includes("próximo jogo") || lowerMessage.includes("próxima partida")) {
+  // Definição das intenções do chatbot
+  const chatbotIntents = [
+    {
+      patterns: ["próximo jogo", "próxima partida", "quando a furia joga"],
+      response: async () => {
         const matches = await fetchData('upcomingMatches', () => furiaAPI.getUpcomingMatches());
-        
         if (matches && matches.length > 0) {
           const nextMatch = matches[0];
           return `O próximo jogo da FURIA será contra ${nextMatch.opponent} no dia ${formatDate(nextMatch.date)}, pela ${nextMatch.event}.`;
         }
-        
         return "Não encontrei informações sobre os próximos jogos da FURIA no momento.";
-      }
-      
-      if (lowerMessage.includes("resultado") || lowerMessage.includes("jogos recentes") || lowerMessage.includes("últimos jogos")) {
+      },
+    },
+    {
+      patterns: ["resultado", "jogos recentes", "últimos jogos"],
+      response: async () => {
         const matches = await fetchData('recentMatches', () => furiaAPI.getRecentMatches());
-        
         if (matches && matches.length > 0) {
           const recentMatch = matches[0];
           const result = recentMatch.status === 'completed' ? (recentMatch.score?.includes('-') ? recentMatch.score : 'sem placar disponível') : 'em andamento';
-          
           return `No jogo mais recente, a FURIA enfrentou ${recentMatch.opponent} com resultado ${result} em ${formatDate(recentMatch.date)}, pela ${recentMatch.event}.`;
         }
-        
         return "Não encontrei informações sobre resultados recentes da FURIA no momento.";
-      }
-      
-      // Padrões para jogadores
-      if (lowerMessage.includes("jogador") || lowerMessage.includes("estatísticas")) {
+      },
+    },
+    {
+      patterns: ["jogador", "estatísticas", "elenco"],
+      response: async (message: string) => {
         const players = await fetchData('players', () => furiaAPI.getPlayers(), 3600000); // Cache de 1 hora para jogadores
-        
         if (players && players.length > 0) {
-          const playerNames = players.map(p => p.name.toLowerCase());
-          
+          const lowerMessage = message.toLowerCase();
           for (const player of players) {
             if (lowerMessage.includes(player.name.toLowerCase())) {
               return `${player.name} tem um rating de ${player.stats?.rating || 'N/A'} e já conquistou vários títulos com a FURIA. Suas principais conquistas incluem: ${player.achievements?.join(", ") || 'informação não disponível'}.`;
             }
           }
-          
           return `O elenco da FURIA conta com jogadores como ${players.map(p => p.name).join(", ")}. Pergunte sobre um jogador específico para mais detalhes.`;
         }
-      }
-      
-      // Padrões para compras/produtos
-      if (lowerMessage.includes("comprar") || lowerMessage.includes("produtos") || lowerMessage.includes("loja")) {
+        return "Não encontrei informações sobre os jogadores da FURIA no momento.";
+      },
+    },
+    {
+      patterns: ["comprar", "produtos", "loja"],
+      response: async () => {
         return `Você pode comprar produtos oficiais da FURIA na loja virtual: https://furiagg.com/collections/all`;
-      }
-      
-      // Padrões para saudações
-      if (lowerMessage.includes("olá") || lowerMessage.includes("oi") || lowerMessage.includes("hey")) {
+      },
+    },
+    {
+      patterns: ["olá", "oi", "hey", "fazer"],
+      response: async () => {
         return "Olá! Sou o chatbot da FURIA. Como posso ajudar você hoje? Você pode me perguntar sobre jogos, jogadores ou produtos da FURIA.";
-      }
-      
-      // Padrões para transmissões
-      if (lowerMessage.includes("transmissão") || lowerMessage.includes("assistir") || lowerMessage.includes("stream")) {
+      },
+    },
+    {
+      patterns: ["transmissao", "assistir", "stream"],
+      response: async () => {
         return "As transmissões dos jogos da FURIA acontecem nos canais oficiais do YouTube (FURIATV) e Twitch (furiatv).";
-      }
-
-      // Padrões para notícias
-      if (lowerMessage.includes("notícia") || lowerMessage.includes("novidade") || lowerMessage.includes("acontecimento")) {
+      },
+    },
+    {
+      patterns: ["noticia", "novidade", "acontecimento"],
+      response: async () => {
         const news = await fetchData('news', () => furiaAPI.getNews());
-        
         if (news && news.length > 0) {
           const latestNews = news[0];
           return `Última notícia: ${latestNews.title} - ${latestNews.excerpt || ''} (Fonte: ${latestNews.source || 'FURIA'}, ${formatDate(latestNews.date)})`;
         }
-        
         return "Não encontrei notícias recentes sobre a FURIA no momento.";
+      },
+    },
+    {
+      patterns: ["vamos furia", "vamos"],
+      response: async () => {
+        return "VAMOS! 🖤🤍";
+      },
+    },
+    // Adicione novas intenções aqui
+  ];
+
+  const generateResponse = async (message: string): Promise<string> => {
+    setIsLoading(true);
+    try {
+      const lowerMessage = message.toLowerCase();
+
+      for (const intent of chatbotIntents) {
+        if (intent.patterns.some(pattern => lowerMessage.includes(pattern))) {
+          return await intent.response(message); // Passa a mensagem para a função de resposta
+        }
       }
-      
-      // Resposta padrão
+
       return "Desculpe, não entendi sua pergunta. Você pode perguntar sobre os próximos jogos da FURIA, informações sobre jogadores, resultados recentes ou como comprar produtos oficiais.";
-      
+
     } catch (error) {
       console.error("Error generating chatbot response:", error);
       return "Desculpe, estou com problemas para processar sua pergunta agora. Tente novamente mais tarde.";

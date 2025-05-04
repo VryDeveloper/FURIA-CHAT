@@ -57,7 +57,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ activeTab, onTabChange }) => {
             <div className="p-4 flex items-center justify-between border-b border-furia-gray">
               <div className="flex items-center">
                 <img 
-                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/FURIA_Logo.svg/1200px-FURIA_Logo.svg.png" 
+                  src="src\assets\images\furia-logo.png" 
                   alt="FURIA Logo" 
                   className="h-8" 
                 />
