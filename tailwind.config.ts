@@ -26,9 +26,9 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				furia: {
-					red: '#FF0000',
+					red: '#FFFFFF', // Changed to white
 					black: '#000000',
-					gold: '#FFD700',
+					gold: '#FFFFFF', // Changed to white
 					gray: '#1A1A1A',
 				},
 				primary: {
@@ -132,7 +132,7 @@ export default {
 						opacity: '1'
 					}
 				},
-				'pulse-red': {
+				'pulse-white': {
 					'0%, 100%': {
 						opacity: '1'
 					},
@@ -148,7 +148,7 @@ export default {
 				'slide-in-right': 'slide-in-right 0.4s ease-out',
 				'slide-in-left': 'slide-in-left 0.4s ease-out',
 				'scale-in': 'scale-in 0.3s ease-out',
-				'pulse-red': 'pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+				'pulse-white': 'pulse-white 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

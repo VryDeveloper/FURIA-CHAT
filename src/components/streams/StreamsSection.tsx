@@ -38,13 +38,13 @@ const streams = [
 const StreamsSection = () => {
   return (
     <div className="p-6 animate-fade-in">
-      <h2 className="text-2xl font-bold mb-6 text-furia-red">Transmissões</h2>
+      <h2 className="text-2xl font-bold mb-6 text-white">Transmissões</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {streams.map((stream, index) => (
           <Card 
             key={stream.id} 
-            className="bg-furia-gray text-white border-furia-gray overflow-hidden hover:border-furia-red hover-glow group animate-fade-in"
+            className="bg-gray-900 text-white border-gray-800 overflow-hidden hover:border-white hover-glow group animate-fade-in"
             style={{ animationDelay: `${index * 150}ms` }}
           >
             <div className="relative overflow-hidden">
@@ -71,15 +71,15 @@ const StreamsSection = () => {
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-1">
                   {stream.platform === "YouTube" ? (
-                    <Youtube className="h-4 w-4 text-red-500" />
+                    <Youtube className="h-4 w-4 text-white" />
                   ) : (
-                    <Video className="h-4 w-4 text-purple-500" />
+                    <Video className="h-4 w-4 text-white" />
                   )}
                   <span className="text-sm">{stream.platform}</span>
                 </div>
                 <div>
                   {stream.live ? (
-                    <span className="text-sm font-semibold text-furia-red">{stream.viewers} assistindo</span>
+                    <span className="text-sm font-semibold text-white">{stream.viewers} assistindo</span>
                   ) : (
                     <span className="text-sm text-gray-400">{stream.scheduledTime}</span>
                   )}
@@ -88,7 +88,7 @@ const StreamsSection = () => {
               <a href={stream.url} target="_blank" rel="noopener noreferrer">
                 <Button 
                   variant="default" 
-                  className="w-full bg-gradient-to-r from-furia-red to-furia-red/80 hover:shadow-lg hover:shadow-furia-red/30 transition-all duration-300"
+                  className="w-full bg-white text-black hover:bg-gray-200 hover:shadow-lg hover:shadow-white/30 transition-all duration-300"
                 >
                   {stream.live ? "Assistir Agora" : "Lembrar-me"}
                 </Button>
@@ -104,8 +104,8 @@ const StreamsSection = () => {
 const Badge = ({ status }: { status: 'live' | 'upcoming' }) => {
   if (status === 'live') {
     return (
-      <div className="bg-furia-red text-white px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 animate-pulse-red">
-        <span className="inline-block h-2 w-2 rounded-full bg-white"></span>
+      <div className="bg-white text-black px-2 py-1 rounded-md text-xs font-bold flex items-center gap-1 animate-pulse-white">
+        <span className="inline-block h-2 w-2 rounded-full bg-black"></span>
         <span>AO VIVO</span>
       </div>
     );

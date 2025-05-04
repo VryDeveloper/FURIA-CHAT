@@ -13,6 +13,7 @@ import { useTranslation } from '@/i18n/translations';
 import { cn } from '@/lib/utils';
 import AuthModal from '@/components/auth/AuthModal';
 import ThemeLanguageToggle from '@/components/header/ThemeLanguageToggle';
+import { toast } from "@/components/ui/sonner";
 
 interface MobileNavProps {
   activeTab: string;
@@ -60,7 +61,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ activeTab, onTabChange }) => {
                   alt="FURIA Logo" 
                   className="h-8" 
                 />
-                <span className="ml-2 font-bold text-xl text-furia-red">FURIA</span>
+                <span className="ml-2 font-bold text-xl text-white">FURIA</span>
               </div>
               <SheetClose asChild>
                 <Button variant="ghost" size="icon">
@@ -79,7 +80,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ activeTab, onTabChange }) => {
                     className={cn(
                       "w-full flex items-center justify-start px-3 py-2 rounded-lg transition-all duration-300",
                       activeTab === item.id
-                        ? "bg-gradient-to-r from-furia-red to-furia-red/80 text-white shadow-lg shadow-furia-red/20"
+                        ? "bg-white text-black shadow-lg"
                         : "text-gray-400 hover:bg-furia-gray/30 hover:text-white"
                     )}
                     onClick={() => handleTabChange(item.id)}
@@ -95,7 +96,7 @@ const MobileNav: React.FC<MobileNavProps> = ({ activeTab, onTabChange }) => {
               {isAuthenticated ? (
                 <div className="space-y-4">
                   <div className="flex items-center p-2 hover:bg-furia-gray/20 rounded-lg">
-                    <div className="h-10 w-10 rounded-full bg-gradient-to-br from-furia-red to-furia-gold flex items-center justify-center text-white font-bold shadow-lg">
+                    <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-black font-bold shadow-lg">
                       {user?.displayName?.charAt(0) || 'F'}
                     </div>
                     <div className="ml-3">
