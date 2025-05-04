@@ -1,246 +1,214 @@
 
 import axios from 'axios';
 
-// Tipos para os dados da FURIA
+const BASE_URL = 'https://api.hltv.org'; // Note: This is for example only, you would need to use a real API
+
+// Types for API responses
 export interface Match {
   id: string;
+  event: string;
   opponent: string;
-  competition: string;
-  date: string; // ISO date string
-  game: string;
-  result?: 'win' | 'loss' | 'draw' | null;
+  date: string;
+  map?: string;
   score?: string;
-  opponentLogo: string;
+  status: 'upcoming' | 'live' | 'completed';
+  stream?: string;
 }
 
 export interface Player {
   id: string;
   name: string;
-  nickname: string;
+  realName: string;
   role: string;
   country: string;
-  image: string;
-  titles: number;
-  rating: number;
-  achievements: string[];
   stats: {
-    maps: number;
-    killsPerRound: number;
+    rating: number;
+    kd: number;
+    adr: number;
+    kpr: number;
     headshots: number;
-    accuracy: number;
-    clutches: number;
+    mapsPlayed: number;
   };
+  achievements: string[];
 }
 
-export interface News {
+export interface NewsItem {
   id: string;
   title: string;
-  excerpt: string;
-  content?: string;
+  description: string;
+  date: string;
   image: string;
-  date: string; // ISO date string
-  source: string;
-  url?: string;
+  url: string;
 }
 
-// URLs para as APIs
-const HLTV_API = 'https://hltv-api.vercel.app';
-const PROXY_API = 'https://api.allorigins.win/raw?url=';
-
-// Serviço para buscar dados da FURIA
-class FuriaAPI {
-  // Buscar próximos jogos
-  async getUpcomingMatches(): Promise<Match[]> {
-    try {
-      // Em produção, use uma API real ou webhook do HLTV 
-      // Simulando dados para demonstração
-      return [
-        {
-          id: "1",
-          opponent: "Team Liquid",
-          competition: "ESL Pro League",
-          date: new Date(Date.now() + 86400000 * 3).toISOString(), // 3 dias no futuro
-          game: "CS2",
-          opponentLogo: "/src/assets/team-liquid-logo.png"
-        },
-        {
-          id: "2",
-          opponent: "NAVI",
-          competition: "BLAST Premier",
-          date: new Date(Date.now() + 86400000 * 7).toISOString(), // 7 dias no futuro
-          game: "CS2",
-          opponentLogo: "/src/assets/navi-logo.png"
-        },
-        {
-          id: "3",
-          opponent: "FaZe Clan",
-          competition: "IEM Katowice",
-          date: new Date(Date.now() + 86400000 * 12).toISOString(), // 12 dias no futuro
-          game: "CS2",
-          opponentLogo: "/src/assets/faze-clan-logo.png"
-        }
-      ];
-    } catch (error) {
-      console.error('Erro ao buscar próximos jogos:', error);
-      return [];
+// Mock data for development
+const mockData = {
+  upcomingMatches: [
+    {
+      id: "1",
+      event: "ESL Pro League Season 19",
+      opponent: "Team Liquid",
+      date: "2025-05-10T18:00:00Z",
+      status: "upcoming",
+      stream: "https://www.twitch.tv/esl_csgo"
+    },
+    {
+      id: "2",
+      event: "BLAST Premier Spring Finals",
+      opponent: "Natus Vincere",
+      date: "2025-05-15T20:00:00Z",
+      status: "upcoming",
+      stream: "https://www.twitch.tv/blastpremier"
     }
-  }
-
-  // Buscar jogos recentes
-  async getRecentMatches(): Promise<Match[]> {
-    try {
-      // Em produção, use uma API real
-      // Simulando dados para demonstração
-      return [
-        {
-          id: "r1",
-          opponent: "MIBR",
-          competition: "ESL Pro League",
-          date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 dias atrás
-          game: "CS2",
-          result: "win",
-          score: "2-0",
-          opponentLogo: "/src/assets/mibr-logo.png"
-        },
-        {
-          id: "r2",
-          opponent: "G2",
-          competition: "BLAST Premier",
-          date: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 dias atrás
-          game: "CS2",
-          result: "loss",
-          score: "0-2",
-          opponentLogo: "/src/assets/g2-logo.png"
-        },
-        {
-          id: "r3",
-          opponent: "Vitality",
-          competition: "BLAST Premier",
-          date: new Date(Date.now() - 86400000 * 6).toISOString(), // 6 dias atrás
-          game: "CS2",
-          result: "win",
-          score: "2-1",
-          opponentLogo: "/src/assets/vitality-logo.png"
-        }
-      ];
-    } catch (error) {
-      console.error('Erro ao buscar jogos recentes:', error);
-      return [];
+  ] as Match[],
+  
+  recentMatches: [
+    {
+      id: "3",
+      event: "IEM Katowice 2025",
+      opponent: "FaZe Clan",
+      date: "2025-04-20T19:00:00Z",
+      map: "Inferno",
+      score: "16-14",
+      status: "completed"
+    },
+    {
+      id: "4",
+      event: "IEM Katowice 2025",
+      opponent: "G2 Esports",
+      date: "2025-04-18T17:30:00Z",
+      map: "Mirage",
+      score: "13-16",
+      status: "completed"
     }
-  }
-
-  // Buscar informações dos jogadores
-  async getPlayers(): Promise<Player[]> {
-    try {
-      // Em produção, use uma API real
-      // Simulando dados para demonstração
-      return [
-        {
-          id: "1",
-          name: "Andrei Piovezan",
-          nickname: "KSCERATO",
-          role: "Rifler",
-          country: "Brasil",
-          image: "/src/assets/players/kscerato.png",
-          titles: 7,
-          rating: 1.21,
-          achievements: ["ESL Pro League Season 16 - Semifinalista", "BLAST Premier: Fall 2022 - Campeão"],
-          stats: {
-            maps: 167,
-            killsPerRound: 0.76,
-            headshots: 42,
-            accuracy: 89,
-            clutches: 32
-          }
-        },
-        {
-          id: "2",
-          name: "Yuri Santos",
-          nickname: "yuurih",
-          role: "Entry Fragger",
-          country: "Brasil",
-          image: "/src/assets/players/yuurih.png",
-          titles: 7,
-          rating: 1.18,
-          achievements: ["ESL Pro League Season 16 - Semifinalista", "BLAST Premier: Fall 2022 - Campeão"],
-          stats: {
-            maps: 167,
-            killsPerRound: 0.72,
-            headshots: 48,
-            accuracy: 85,
-            clutches: 28
-          }
-        },
-        {
-          id: "3",
-          name: "Kaike Cerato",
-          nickname: "KSCERATO",
-          role: "In-game Leader",
-          country: "Brasil",
-          image: "/src/assets/players/art.png",
-          titles: 7,
-          rating: 1.01,
-          achievements: ["ESL Pro League Season 16 - Semifinalista", "BLAST Premier: Fall 2022 - Campeão"],
-          stats: {
-            maps: 167,
-            killsPerRound: 0.68,
-            headshots: 38,
-            accuracy: 83,
-            clutches: 18
-          }
-        }
-      ];
-    } catch (error) {
-      console.error('Erro ao buscar informações dos jogadores:', error);
-      return [];
+  ] as Match[],
+  
+  players: [
+    {
+      id: "1",
+      name: "KSCERATO",
+      realName: "Kaike Cerato",
+      role: "Rifler",
+      country: "Brasil",
+      stats: {
+        rating: 1.21,
+        kd: 1.35,
+        adr: 85.7,
+        kpr: 0.78,
+        headshots: 52.1,
+        mapsPlayed: 254
+      },
+      achievements: [
+        "ESL Pro League Season 16 - Semifinalist",
+        "BLAST Premier: Fall 2022 - Champion",
+        "IEM Rio Major 2022 - Top 8"
+      ]
+    },
+    {
+      id: "2",
+      name: "yuurih",
+      realName: "Yuri Santos",
+      role: "Rifler",
+      country: "Brasil",
+      stats: {
+        rating: 1.18,
+        kd: 1.29,
+        adr: 82.3,
+        kpr: 0.76,
+        headshots: 45.8,
+        mapsPlayed: 254
+      },
+      achievements: [
+        "ESL Pro League Season 16 - Semifinalist",
+        "BLAST Premier: Fall 2022 - Champion",
+        "IEM Rio Major 2022 - Top 8"
+      ]
     }
-  }
-
-  // Buscar notícias
-  async getNews(): Promise<News[]> {
-    try {
-      // Em produção, use uma API real ou scraping de sites de notícias
-      // Simulando dados para demonstração
-      return [
-        {
-          id: "1",
-          title: "FURIA vence Team Liquid e avança para a semifinal da ESL Pro League",
-          excerpt: "A equipe brasileira mostrou um desempenho impressionante com KSCERATO liderando o caminho com uma performance de 30 frags no mapa decisivo.",
-          image: "/src/assets/news/esl-victory.jpg",
-          date: new Date(Date.now() - 86400000 * 2).toISOString(), // 2 dias atrás
-          source: "HLTV.org"
-        },
-        {
-          id: "2",
-          title: "FURIA anuncia patrocínio milionário com marca global",
-          excerpt: "A organização brasileira fechou uma parceria de três anos que promete expandir ainda mais sua presença internacional.",
-          image: "/src/assets/news/sponsorship.jpg",
-          date: new Date(Date.now() - 86400000 * 5).toISOString(), // 5 dias atrás
-          source: "Globo Esporte"
-        },
-        {
-          id: "3",
-          title: "Jogadores da FURIA visitam fãs em hospital de São Paulo",
-          excerpt: "Em uma ação social, a equipe brasileira passou o dia com jovens pacientes, distribuindo presentes e jogando com os fãs.",
-          image: "/src/assets/news/hospital-visit.jpg",
-          date: new Date(Date.now() - 86400000 * 10).toISOString(), // 10 dias atrás
-          source: "ESPN Brasil"
-        },
-        {
-          id: "4",
-          title: "FURIA se prepara para bootcamp na Europa antes do próximo Major",
-          excerpt: "A equipe viajará na próxima semana para se preparar intensamente para o próximo grande torneio internacional.",
-          image: "/src/assets/news/bootcamp.jpg",
-          date: new Date(Date.now() - 86400000 * 15).toISOString(), // 15 dias atrás
-          source: "Dexerto"
-        }
-      ];
-    } catch (error) {
-      console.error('Erro ao buscar notícias:', error);
-      return [];
+  ] as Player[],
+  
+  news: [
+    {
+      id: "1",
+      title: "FURIA anuncia nova parceria com patrocinador global",
+      description: "A FURIA anunciou hoje uma parceria estratégica com uma grande empresa global...",
+      date: "2025-05-01T14:30:00Z",
+      image: "/src/assets/news/sponsorship.jpg",
+      url: "#"
+    },
+    {
+      id: "2",
+      title: "FURIA vence ESL Pro League Season 18",
+      description: "A equipe brasileira conquistou o título após uma final emocionante contra a Natus Vincere...",
+      date: "2025-04-15T22:45:00Z",
+      image: "/src/assets/news/esl-victory.jpg",
+      url: "#"
     }
-  }
-}
+  ] as NewsItem[]
+};
 
-// Exporta uma instância única da API
-export const furiaAPI = new FuriaAPI();
+// API functions
+export const furiaAPI = {
+  getUpcomingMatches: async (): Promise<Match[]> => {
+    // In a real implementation, you would fetch from an actual API
+    // return axios.get(`${BASE_URL}/matches/upcoming/furia`).then(res => res.data);
+    
+    // For development, return mock data
+    return Promise.resolve(mockData.upcomingMatches);
+  },
+  
+  getRecentMatches: async (): Promise<Match[]> => {
+    // In a real implementation, you would fetch from an actual API
+    // return axios.get(`${BASE_URL}/matches/recent/furia`).then(res => res.data);
+    
+    // For development, return mock data
+    return Promise.resolve(mockData.recentMatches);
+  },
+  
+  getPlayers: async (): Promise<Player[]> => {
+    // In a real implementation, you would fetch from an actual API
+    // return axios.get(`${BASE_URL}/team/furia/players`).then(res => res.data);
+    
+    // For development, return mock data
+    return Promise.resolve(mockData.players);
+  },
+  
+  getNews: async (): Promise<NewsItem[]> => {
+    // In a real implementation, you would fetch from an actual API
+    // return axios.get(`${BASE_URL}/news/furia`).then(res => res.data);
+    
+    // For development, return mock data
+    return Promise.resolve(mockData.news);
+  },
+  
+  // Method to query the chatbot with FURIA related questions
+  queryChatbot: async (query: string): Promise<{ response: string }> => {
+    // In a real implementation, this would call an AI service like GPT or Gemini
+    // return axios.post(`${BASE_URL}/chatbot`, { query }).then(res => res.data);
+    
+    // For development, simulate a response
+    const responses: Record<string, string> = {
+      'próximo jogo': `O próximo jogo da FURIA será contra ${mockData.upcomingMatches[0].opponent} no evento ${mockData.upcomingMatches[0].event} em ${new Date(mockData.upcomingMatches[0].date).toLocaleDateString()}.`,
+      'títulos': 'A FURIA conquistou 7 títulos internacionais, incluindo o BLAST Premier: Fall 2022 e a ESL Pro League Season 18.',
+      'jogadores': 'O atual elenco da FURIA é composto por KSCERATO, yuurih, arT, drop e chelo.',
+      'loja': 'Você pode comprar produtos oficiais da FURIA na loja online oficial: https://lojafuria.com.br'
+    };
+    
+    // Simple keyword matching for demo purposes
+    let response = 'Desculpe, não tenho informações sobre isso. Tente perguntar sobre próximos jogos, títulos ou jogadores da FURIA.';
+    
+    Object.entries(responses).forEach(([key, value]) => {
+      if (query.toLowerCase().includes(key)) {
+        response = value;
+      }
+    });
+    
+    // Simulate API delay
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve({ response });
+      }, 500);
+    });
+  }
+};
+
+export default furiaAPI;

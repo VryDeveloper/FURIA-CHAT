@@ -52,4 +52,47 @@
   .message-enter {
     @apply animate-fade-in;
   }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-furia-black;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-furia-gray rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-furia-red;
+  }
+}
+
+/* Add additional animation utilities */
+@keyframes pulse-red {
+  0%, 100% { 
+    opacity: 1; 
+  }
+  50% { 
+    opacity: 0.6; 
+  }
+}
+
+.animate-pulse-red {
+  animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.transition-base {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+.hover-scale {
+  @apply hover:scale-105 transition-transform duration-300;
+}
+
+.hover-glow {
+  @apply hover:shadow-lg hover:shadow-furia-red/20 transition-all duration-300;
 }

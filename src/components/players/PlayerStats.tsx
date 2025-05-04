@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@/components/ui/progress-custom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Mock data for player stats
@@ -73,21 +73,21 @@ const players = [
 
 const PlayerStats = () => {
   return (
-    <div className="p-6">
+    <div className="p-6 animate-fade-in">
       <h2 className="text-2xl font-bold mb-6 text-furia-red">Estatísticas dos Jogadores</h2>
       
       <Tabs defaultValue="players" className="w-full">
-        <TabsList className="bg-furia-gray mb-6">
-          <TabsTrigger value="players" className="data-[state=active]:bg-furia-red">Jogadores</TabsTrigger>
-          <TabsTrigger value="team" className="data-[state=active]:bg-furia-red">Equipe</TabsTrigger>
+        <TabsList className="bg-furia-gray mb-6 rounded-full overflow-hidden">
+          <TabsTrigger value="players" className="data-[state=active]:bg-furia-red transition-all duration-300">Jogadores</TabsTrigger>
+          <TabsTrigger value="team" className="data-[state=active]:bg-furia-red transition-all duration-300">Equipe</TabsTrigger>
         </TabsList>
         
         <TabsContent value="players" className="mt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {players.map(player => (
-              <Card key={player.id} className="bg-furia-gray text-white border-furia-gray overflow-hidden">
+              <Card key={player.id} className="bg-furia-gray text-white border-furia-gray overflow-hidden hover:shadow-lg hover:shadow-furia-red/20 transition-all duration-300 group">
                 <div className="flex flex-col md:flex-row items-center p-4 gap-4 border-b border-furia-red">
-                  <div className="h-24 w-24 rounded-full overflow-hidden bg-black flex-shrink-0">
+                  <div className="h-24 w-24 rounded-full overflow-hidden bg-black flex-shrink-0 transform group-hover:scale-105 transition-transform duration-300">
                     <img 
                       src={player.photo} 
                       alt={player.name} 
@@ -131,7 +131,7 @@ const PlayerStats = () => {
         </TabsContent>
         
         <TabsContent value="team" className="mt-0">
-          <Card className="bg-furia-gray text-white border-furia-gray">
+          <Card className="bg-furia-gray text-white border-furia-gray hover:shadow-lg hover:shadow-furia-red/20 transition-all duration-300">
             <CardHeader>
               <CardTitle>Estatísticas da Equipe</CardTitle>
             </CardHeader>
@@ -152,19 +152,19 @@ const PlayerStats = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-black/30 p-4 rounded-lg">
+                  <div className="bg-black/30 p-4 rounded-lg transform hover:scale-105 transition-all duration-300">
                     <div className="text-center">
                       <span className="text-sm text-gray-400">Títulos</span>
                       <p className="text-3xl font-bold text-furia-gold">7</p>
                     </div>
                   </div>
-                  <div className="bg-black/30 p-4 rounded-lg">
+                  <div className="bg-black/30 p-4 rounded-lg transform hover:scale-105 transition-all duration-300">
                     <div className="text-center">
                       <span className="text-sm text-gray-400">Win Rate</span>
                       <p className="text-3xl font-bold text-furia-red">68%</p>
                     </div>
                   </div>
-                  <div className="bg-black/30 p-4 rounded-lg">
+                  <div className="bg-black/30 p-4 rounded-lg transform hover:scale-105 transition-all duration-300">
                     <div className="text-center">
                       <span className="text-sm text-gray-400">Mapas Jogados</span>
                       <p className="text-3xl font-bold">254</p>
