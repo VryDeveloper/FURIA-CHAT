@@ -1,72 +1,142 @@
 
 import { useState } from 'react';
+import { furiaAPI, Match, Player, News } from '@/api/furiaAPI';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
-// Mock data for responses
-const matchData = {
-  nextMatch: {
-    opponent: "Team Liquid",
-    date: "10 de junho às 15:00",
-    competition: "ESL Pro League"
-  },
-  players: {
-    kscerato: {
-      titles: 7,
-      rating: 1.21,
-      achievements: ["ESL Pro League Season 16 - Semifinalista", "BLAST Premier: Fall 2022 - Campeão"]
-    },
-    yuurih: {
-      titles: 7,
-      rating: 1.18,
-      achievements: ["ESL Pro League Season 16 - Semifinalista", "BLAST Premier: Fall 2022 - Campeão"]
-    },
-    art: {
-      titles: 7,
-      rating: 1.01,
-      achievements: ["ESL Pro League Season 16 - Semifinalista", "BLAST Premier: Fall 2022 - Campeão"]
-    }
-  },
-  shop: "https://furiagg.com/collections/all"
+// Cache para armazenar dados da API e evitar chamadas repetidas
+let dataCache: {
+  upcomingMatches?: Match[];
+  recentMatches?: Match[];
+  players?: Player[];
+  news?: News[];
+  lastFetch: {
+    upcomingMatches?: Date;
+    recentMatches?: Date;
+    players?: Date;
+    news?: Date;
+  };
+} = {
+  lastFetch: {}
 };
 
 export const useChatbot = () => {
   const [isLoading, setIsLoading] = useState(false);
 
+  // Função para formatar datas em português
+  const formatDate = (dateStr: string): string => {
+    try {
+      const date = new Date(dateStr);
+      return format(date, "d 'de' MMMM 'às' HH:mm", { locale: ptBR });
+    } catch (e) {
+      return dateStr;
+    }
+  };
+
+  // Buscar dados da API com cache
+  const fetchData = async <T extends keyof typeof dataCache>(
+    type: T,
+    fetchFn: () => Promise<any>,
+    maxAge = 300000 // 5 minutos por padrão
+  ) => {
+    const now = new Date();
+    const lastFetch = dataCache.lastFetch[type];
+    
+    // Verificar se os dados estão em cache e não estão expirados
+    if (
+      dataCache[type] && 
+      lastFetch && 
+      now.getTime() - lastFetch.getTime() < maxAge
+    ) {
+      return dataCache[type];
+    }
+    
+    // Buscar novos dados
+    const data = await fetchFn();
+    dataCache[type] = data;
+    dataCache.lastFetch[type] = now;
+    
+    return data;
+  };
+
   const generateResponse = async (message: string): Promise<string> => {
     setIsLoading(true);
     
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      // Converter mensagem para minúsculas para facilitar a comparação
       const lowerMessage = message.toLowerCase();
       
-      // Simple pattern matching for responses
+      // Padrões para jogos e resultados
       if (lowerMessage.includes("próximo jogo") || lowerMessage.includes("próxima partida")) {
-        return `O próximo jogo da FURIA será contra ${matchData.nextMatch.opponent} no dia ${matchData.nextMatch.date}, pela ${matchData.nextMatch.competition}.`;
+        const matches = await fetchData('upcomingMatches', () => furiaAPI.getUpcomingMatches());
+        
+        if (matches && matches.length > 0) {
+          const nextMatch = matches[0];
+          return `O próximo jogo da FURIA será contra ${nextMatch.opponent} no dia ${formatDate(nextMatch.date)}, pela ${nextMatch.competition}.`;
+        }
+        
+        return "Não encontrei informações sobre os próximos jogos da FURIA no momento.";
       }
       
-      if (lowerMessage.includes("kscerato") && (lowerMessage.includes("título") || lowerMessage.includes("ganhou"))) {
-        return `KSCERATO já conquistou ${matchData.players.kscerato.titles} títulos com a FURIA. Seus principais achievements incluem: ${matchData.players.kscerato.achievements.join(", ")}.`;
+      if (lowerMessage.includes("resultado") || lowerMessage.includes("jogos recentes") || lowerMessage.includes("últimos jogos")) {
+        const matches = await fetchData('recentMatches', () => furiaAPI.getRecentMatches());
+        
+        if (matches && matches.length > 0) {
+          const recentMatch = matches[0];
+          const result = recentMatch.result === 'win' ? 'venceu' : recentMatch.result === 'loss' ? 'perdeu' : 'empatou';
+          
+          return `No jogo mais recente, a FURIA ${result} contra ${recentMatch.opponent} por ${recentMatch.score} em ${formatDate(recentMatch.date)}, pela ${recentMatch.competition}.`;
+        }
+        
+        return "Não encontrei informações sobre resultados recentes da FURIA no momento.";
       }
       
+      // Padrões para jogadores
+      if (lowerMessage.includes("jogador") || lowerMessage.includes("estatísticas")) {
+        const players = await fetchData('players', () => furiaAPI.getPlayers(), 3600000); // Cache de 1 hora para jogadores
+        
+        if (players && players.length > 0) {
+          const playerNames = players.map(p => p.nickname.toLowerCase());
+          
+          for (const player of players) {
+            if (lowerMessage.includes(player.nickname.toLowerCase())) {
+              return `${player.nickname} (${player.name}) tem um rating de ${player.rating} e já conquistou ${player.titles} títulos com a FURIA. Suas principais conquistas incluem: ${player.achievements.join(", ")}.`;
+            }
+          }
+          
+          return `O elenco da FURIA conta com jogadores como ${players.map(p => p.nickname).join(", ")}. Pergunte sobre um jogador específico para mais detalhes.`;
+        }
+      }
+      
+      // Padrões para compras/produtos
       if (lowerMessage.includes("comprar") || lowerMessage.includes("produtos") || lowerMessage.includes("loja")) {
-        return `Você pode comprar produtos oficiais da FURIA na loja virtual: ${matchData.shop}`;
+        return `Você pode comprar produtos oficiais da FURIA na loja virtual: https://furiagg.com/collections/all`;
       }
       
+      // Padrões para saudações
       if (lowerMessage.includes("olá") || lowerMessage.includes("oi") || lowerMessage.includes("hey")) {
         return "Olá! Sou o chatbot da FURIA. Como posso ajudar você hoje? Você pode me perguntar sobre jogos, jogadores ou produtos da FURIA.";
       }
       
-      if (lowerMessage.includes("jogadores") || lowerMessage.includes("elenco")) {
-        return "A FURIA conta com grandes talentos como KSCERATO, yuurih, arT, drop e chelo no seu time principal de CS2.";
-      }
-      
+      // Padrões para transmissões
       if (lowerMessage.includes("transmissão") || lowerMessage.includes("assistir") || lowerMessage.includes("stream")) {
         return "As transmissões dos jogos da FURIA acontecem nos canais oficiais do YouTube (FURIATV) e Twitch (furiatv).";
       }
+
+      // Padrões para notícias
+      if (lowerMessage.includes("notícia") || lowerMessage.includes("novidade") || lowerMessage.includes("acontecimento")) {
+        const news = await fetchData('news', () => furiaAPI.getNews());
+        
+        if (news && news.length > 0) {
+          const latestNews = news[0];
+          return `Última notícia: ${latestNews.title} - ${latestNews.excerpt} (Fonte: ${latestNews.source}, ${formatDate(latestNews.date)})`;
+        }
+        
+        return "Não encontrei notícias recentes sobre a FURIA no momento.";
+      }
       
-      // Default response
-      return "Desculpe, não entendi sua pergunta. Você pode perguntar sobre os próximos jogos da FURIA, informações sobre jogadores ou como comprar produtos oficiais.";
+      // Resposta padrão
+      return "Desculpe, não entendi sua pergunta. Você pode perguntar sobre os próximos jogos da FURIA, informações sobre jogadores, resultados recentes ou como comprar produtos oficiais.";
       
     } catch (error) {
       console.error("Error generating chatbot response:", error);

@@ -9,7 +9,7 @@ interface MainLayoutProps {
 
 const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="min-h-screen flex bg-black">
+    <div className="min-h-screen flex bg-furia-black">
       <Sidebar />
       <main className="flex-1 flex flex-col">{children}</main>
       <Toaster />

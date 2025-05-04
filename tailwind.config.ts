@@ -27,9 +27,9 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				furia: {
 					red: '#FF0000',
-					black: '#000000',
+					black: '#000000', // Mantendo preto como cor principal
 					gold: '#FFD700',
-					gray: '#2A2A2A',
+					gray: '#1A1A1A', // Ajustando o tom de cinza para ser mais escuro
 				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
@@ -112,3 +112,4 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
