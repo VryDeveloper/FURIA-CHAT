@@ -38,7 +38,7 @@ const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
           alt="FURIA Logo" 
           className="h-12 transform flex rounded-full hover-scale transition-transform duration-300" 
         />
-        <span className="hidden lg:block ml-3 font-bold text-xl text-furia-red">FURIA</span>
+        <span className="hidden lg:block ml-3 font-bold text-xl text-furia-red">FURIA-CHAT</span>
       </div>
 
       <div className="flex-1 py-6">
