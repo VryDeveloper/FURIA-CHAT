@@ -27,9 +27,9 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				furia: {
 					red: '#FF0000',
-					black: '#000000', // Mantendo preto como cor principal
+					black: '#000000',
 					gold: '#FFD700',
-					gray: '#1A1A1A', // Ajustando o tom de cinza para ser mais escuro
+					gray: '#1A1A1A',
 				},
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
@@ -131,6 +131,14 @@ export default {
 						transform: 'scale(1)',
 						opacity: '1'
 					}
+				},
+				'pulse-red': {
+					'0%, 100%': {
+						opacity: '1'
+					},
+					'50%': {
+						opacity: '0.6'
+					}
 				}
 			},
 			animation: {
@@ -139,7 +147,8 @@ export default {
 				'fade-in': 'fade-in 0.4s ease-out',
 				'slide-in-right': 'slide-in-right 0.4s ease-out',
 				'slide-in-left': 'slide-in-left 0.4s ease-out',
-				'scale-in': 'scale-in 0.3s ease-out'
+				'scale-in': 'scale-in 0.3s ease-out',
+				'pulse-red': 'pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

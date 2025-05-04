@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import ChatInterface from "@/components/chat/ChatInterface";
 import MatchCalendar from "@/components/calendar/MatchCalendar";
@@ -7,9 +7,20 @@ import StreamsSection from "@/components/streams/StreamsSection";
 import PlayerStats from "@/components/players/PlayerStats";
 import NewsFeed from "@/components/news/NewsFeed";
 import FanChants from "@/components/fan/FanChants";
+import PlayerComparison from "@/components/players/PlayerComparison";
+import { websocketService } from "@/services/websocket";
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState<string>("chat");
+  
+  // Connect to WebSocket on component mount
+  useEffect(() => {
+    websocketService.connect();
+    
+    return () => {
+      websocketService.disconnect();
+    };
+  }, []);
   
   const renderSection = () => {
     switch (activeSection) {
@@ -20,8 +31,13 @@ const Index = () => {
       case "streams":
         return <StreamsSection />;
       case "players":
-        return <PlayerStats />;
-      case "news":
+        return (
+          <div className="space-y-8">
+            <PlayerStats />
+            <PlayerComparison />
+          </div>
+        );
+      case "tournaments":
         return <NewsFeed />;
       case "fan":
         return <FanChants />;
@@ -30,41 +46,11 @@ const Index = () => {
     }
   };
   
-  // Listen for sidebar button clicks
-  React.useEffect(() => {
-    const handleSidebarClick = (e: MouseEvent) => {
-      const target = e.target as Element;
-      const sidebarButton = target.closest('button');
-      
-      if (sidebarButton) {
-        // Check if this is a sidebar navigation button
-        const sidebarItems = ["chat", "calendar", "streams", "players", "tournaments"];
-        const sidebarText = sidebarButton.textContent?.toLowerCase() || "";
-        
-        if (sidebarText.includes("agenda")) {
-          setActiveSection("calendar");
-        } else if (sidebarText.includes("transmissões")) {
-          setActiveSection("streams");
-        } else if (sidebarText.includes("jogadores")) {
-          setActiveSection("players");
-        } else if (sidebarText.includes("torneios")) {
-          setActiveSection("news");
-        } else if (sidebarText.includes("chat")) {
-          setActiveSection("chat");
-        }
-      }
-    };
-    
-    document.addEventListener("click", handleSidebarClick);
-    
-    return () => {
-      document.removeEventListener("click", handleSidebarClick);
-    };
-  }, []);
-  
   return (
-    <MainLayout>
-      {renderSection()}
+    <MainLayout activeTab={activeSection} onTabChange={setActiveSection}>
+      <div className="animate-fade-in">
+        {renderSection()}
+      </div>
     </MainLayout>
   );
 };

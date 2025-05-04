@@ -1,15 +1,24 @@
 
 import { useState } from 'react';
-import { furiaAPI, Match, Player, News } from '@/api/furiaAPI';
+import { furiaAPI, Match, Player } from '@/api/furiaAPI';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+
+// Define the NewsItem interface since it's missing from the API exports
+interface NewsItem {
+  id: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  source: string;
+}
 
 // Cache para armazenar dados da API e evitar chamadas repetidas
 let dataCache: {
   upcomingMatches?: Match[];
   recentMatches?: Match[];
   players?: Player[];
-  news?: News[];
+  news?: NewsItem[];
   lastFetch: {
     upcomingMatches?: Date;
     recentMatches?: Date;
@@ -34,7 +43,7 @@ export const useChatbot = () => {
   };
 
   // Buscar dados da API com cache
-  const fetchData = async <T extends keyof typeof dataCache>(
+  const fetchData = async <T extends 'upcomingMatches' | 'recentMatches' | 'players' | 'news'>(
     type: T,
     fetchFn: () => Promise<any>,
     maxAge = 300000 // 5 minutos por padrão
@@ -72,7 +81,7 @@ export const useChatbot = () => {
         
         if (matches && matches.length > 0) {
           const nextMatch = matches[0];
-          return `O próximo jogo da FURIA será contra ${nextMatch.opponent} no dia ${formatDate(nextMatch.date)}, pela ${nextMatch.competition}.`;
+          return `O próximo jogo da FURIA será contra ${nextMatch.opponent} no dia ${formatDate(nextMatch.date)}, pela ${nextMatch.event}.`;
         }
         
         return "Não encontrei informações sobre os próximos jogos da FURIA no momento.";
@@ -83,9 +92,9 @@ export const useChatbot = () => {
         
         if (matches && matches.length > 0) {
           const recentMatch = matches[0];
-          const result = recentMatch.result === 'win' ? 'venceu' : recentMatch.result === 'loss' ? 'perdeu' : 'empatou';
+          const result = recentMatch.status === 'completed' ? (recentMatch.score?.includes('-') ? recentMatch.score : 'sem placar disponível') : 'em andamento';
           
-          return `No jogo mais recente, a FURIA ${result} contra ${recentMatch.opponent} por ${recentMatch.score} em ${formatDate(recentMatch.date)}, pela ${recentMatch.competition}.`;
+          return `No jogo mais recente, a FURIA enfrentou ${recentMatch.opponent} com resultado ${result} em ${formatDate(recentMatch.date)}, pela ${recentMatch.event}.`;
         }
         
         return "Não encontrei informações sobre resultados recentes da FURIA no momento.";
@@ -96,15 +105,15 @@ export const useChatbot = () => {
         const players = await fetchData('players', () => furiaAPI.getPlayers(), 3600000); // Cache de 1 hora para jogadores
         
         if (players && players.length > 0) {
-          const playerNames = players.map(p => p.nickname.toLowerCase());
+          const playerNames = players.map(p => p.name.toLowerCase());
           
           for (const player of players) {
-            if (lowerMessage.includes(player.nickname.toLowerCase())) {
-              return `${player.nickname} (${player.name}) tem um rating de ${player.rating} e já conquistou ${player.titles} títulos com a FURIA. Suas principais conquistas incluem: ${player.achievements.join(", ")}.`;
+            if (lowerMessage.includes(player.name.toLowerCase())) {
+              return `${player.name} tem um rating de ${player.stats?.rating || 'N/A'} e já conquistou vários títulos com a FURIA. Suas principais conquistas incluem: ${player.achievements?.join(", ") || 'informação não disponível'}.`;
             }
           }
           
-          return `O elenco da FURIA conta com jogadores como ${players.map(p => p.nickname).join(", ")}. Pergunte sobre um jogador específico para mais detalhes.`;
+          return `O elenco da FURIA conta com jogadores como ${players.map(p => p.name).join(", ")}. Pergunte sobre um jogador específico para mais detalhes.`;
         }
       }
       
@@ -129,7 +138,7 @@ export const useChatbot = () => {
         
         if (news && news.length > 0) {
           const latestNews = news[0];
-          return `Última notícia: ${latestNews.title} - ${latestNews.excerpt} (Fonte: ${latestNews.source}, ${formatDate(latestNews.date)})`;
+          return `Última notícia: ${latestNews.title} - ${latestNews.excerpt || ''} (Fonte: ${latestNews.source || 'FURIA'}, ${formatDate(latestNews.date)})`;
         }
         
         return "Não encontrei notícias recentes sobre a FURIA no momento.";

@@ -7,6 +7,49 @@
 
 @layer base {
   :root {
+    /* Light mode */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 98%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 98%;
+    --popover-foreground: 0 0% 10%;
+
+    --primary: 0 85% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 10%;
+
+    --muted: 0 0% 90%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 0 0% 94%;
+    --accent-foreground: 0 0% 10%;
+
+    --destructive: 0 85% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 80%;
+    --input: 0 0% 80%;
+    --ring: 0 0% 80%;
+
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 0 85% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 20%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 0 0% 25%;
+    --sidebar-ring: 0 0% 25%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark mode */
     --background: 0 0% 0%;
     --foreground: 0 0% 98%;
 
@@ -35,7 +78,14 @@
     --input: 0 0% 15%;
     --ring: 0 0% 15%;
 
-    --radius: 0.5rem;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 0 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 10%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 0 0% 15%;
   }
 }
 
@@ -46,6 +96,7 @@
 
   body {
     @apply bg-background text-foreground font-["Montserrat",sans-serif] overflow-x-hidden;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02", "cv03";
   }
 
   /* Chat message animations */
@@ -72,15 +123,6 @@
 }
 
 /* Add additional animation utilities */
-@keyframes pulse-red {
-  0%, 100% { 
-    opacity: 1; 
-  }
-  50% { 
-    opacity: 0.6; 
-  }
-}
-
 .animate-pulse-red {
   animation: pulse-red 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
@@ -95,4 +137,55 @@
 
 .hover-glow {
   @apply hover:shadow-lg hover:shadow-furia-red/20 transition-all duration-300;
+}
+
+.text-gradient {
+  @apply bg-gradient-to-br from-white via-white/90 to-white/70 bg-clip-text text-transparent;
+}
+
+/* Glass morphism effect */
+.glassmorphism {
+  @apply bg-black/30 backdrop-blur-sm border border-furia-gray/30;
+}
+
+/* Card styles */
+.card-gradient {
+  @apply bg-gradient-to-br from-furia-black to-furia-gray/30 backdrop-blur-sm;
+}
+
+/* Animated border */
+.animated-border {
+  position: relative;
+}
+
+.animated-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(45deg, #ff0000, #ffd700, #ff0000);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: border-rotate 4s linear infinite;
+}
+
+@keyframes border-rotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 130% 50%;
+  }
+}
+
+/* Responsive utilities */
+.mobile-only {
+  @apply block md:hidden;
+}
+
+.desktop-only {
+  @apply hidden md:block;
 }
