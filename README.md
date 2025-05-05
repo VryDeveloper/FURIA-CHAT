@@ -68,3 +68,5 @@ bun install
 npm run dev
 ```
 
+Autor: Victor Augusto - https://www.linkedin.com/in/victor-augusto-79a5612b6/
+
